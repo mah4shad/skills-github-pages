@@ -1,0 +1,21 @@
+import cv2
+import numpy as np
+from PIL import Image
+# Read the input image and convert to grayscale
+image = cv2.imread('m.jpg')
+image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+# Define structuring elements
+diamond = np.array([[0, 1, 0],
+                    [1, 1, 1],
+                    [0, 1, 0]], dtype=np.uint8)
+horizon = np.ones((5, 1), dtype=np.uint8)
+# Erosion with diamond structuring element
+eroded = cv2.erode(image, diamond)
+# Dilation with horizon structuring elements
+dilated1 = cv2.dilate(eroded, horizon)
+# Median filtering with a 5x5 kernel
+noline =cv2.medianBlur(dilated1,3)
+
+# Display original and processed images
+Image.fromarray(image).show(title='org')
+Image.fromarray(noline).show(title='morpho')
