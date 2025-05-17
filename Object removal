@@ -1,0 +1,27 @@
+from PIL import Image
+import IPython.display as display
+
+# مسیر تصاویر
+image1_path = "/content/org.jpg"
+image2_path = "/content/MASK.jpg"
+
+# بارگذاری تصاویر
+image1 = Image.open(image1_path)
+image2 = Image.open(image2_path)
+
+# بررسی ارتفاع یکسان و تنظیم اگر لازم باشد
+if image1.height != image2.height:
+    new_height = min(image1.height, image2.height)
+    image1 = image1.resize((int(image1.width * (new_height / image1.height)), new_height))
+    image2 = image2.resize((int(image2.width * (new_height / image2.height)), new_height))
+
+# ایجاد تصویر جدید با عرض مجموع دو تصویر
+combined_width = image1.width + image2.width
+combined_image = Image.new("RGB", (combined_width, image1.height))
+
+# قرار دادن تصاویر در کنار هم
+combined_image.paste(image1, (0, 0))
+combined_image.paste(image2, (image1.width, 0))
+
+# نمایش تصویر در خروجی کولب
+display.display(combined_image)
