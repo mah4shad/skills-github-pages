@@ -1,0 +1,19 @@
+from matplotlib import pyplot as plt
+import cv2
+
+pic = cv2.imread("/content/pic.png")
+
+model = cv2.CascadeClassifier("/content/model.xml")
+pic = cv2.cvtColor(pic,cv2.COLOR_BGR2RGB)
+
+face = model.detectMultiScale(pic)
+
+
+x = face[0][0]
+y = face[0][1]
+a = face[0][2]
+b = face[0][3]
+
+
+pic = cv2.rectangle(pic , (x,y),(x+a,y+b),(255,0,0),3)
+plt.imshow(pic)
