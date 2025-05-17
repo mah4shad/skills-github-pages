@@ -1,0 +1,73 @@
+from google.colab.patches import cv2_imshow
+import cv2
+import numpy as np
+import glob
+paths = []
+for i in glob.glob("/content/mydrive/MyDrive/DIP/money-dataset/*"):
+    paths.append(i)
+paths
+img = cv2.imread(paths[30])
+cv2_imshow(img)
+img.shape
+images = []
+gray = []
+labels = []
+for i in paths:
+    img = cv2.imread(i)
+    img = cv2.resize(img, (128, 64))
+    g = (img[:,:,0] + img[:,:,1] + img[:,:,2]) / 3
+    gray.append(g)
+    labels.append((i.split('/')[-1]))
+    images.append(img)
+
+images = np.array(images)
+labels = np.array(labels)
+gray = np.array(gray)
+images.shape
+cv2_imshow(images[0])
+def normalization(img):
+    r = img[:,:,0]
+    g = img[:,:,1]
+    b = img[:,:,2]
+
+    r = (r - np.mean(r)) / np.std(r)
+    g = (g - np.mean(g)) / np.std(g)
+    b = (b - np.mean(b)) / np.std(b)
+
+
+    return r, g, b
+def distance(r, g, b, R, G, B):
+
+    bd = b - B
+    gd = g - G
+    rd = r - R
+
+    dist = np.mean(np.sqrt(bd**2 + gd**2 + rd**2))
+
+    return dist
+img = cv2.imread('/content/mydrive/MyDrive/DIP/oldcash2000.jpg')
+img = cv2.resize(img, (128, 64))
+cv2_imshow(img)
+dist = []
+g_dist = []
+norm_new = normalization(img)
+
+for i in images:
+    norm_i =  normalization(i)
+
+    dist.append(distance(norm_i[0], norm_i[1], norm_i[2], norm_new[0], norm_new[1], norm_new[2] ))
+    i_g = (i[:,:,0] + i[:,:,1] + i[:,:,2]) / 3
+    img_g = (img[:,:,0] + img[:,:,1] + img[:,:,2]) / 3
+    g_dist.append((np.mean(i_g) - np.mean(img_g)))
+
+
+dist = np.array(dist)
+answer = np.argmin(dist)
+if g_dist[answer] > -10.0 and g_dist[answer] < 10.0:
+
+    print(answer)
+    print("this picture is :", labels[answer])
+    cv2_imshow(images[answer])
+else:
+    print("no money detected!")
+
